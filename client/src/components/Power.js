@@ -1,5 +1,4 @@
-// Power.js
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 function Power() {
@@ -11,18 +10,17 @@ function Power() {
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5555/powers/${id}`)
-      .then((r) => {
-        if (r.ok) {
-          r.json().then((power) =>
-            setPower({ data: power, error: null, status: "resolved" })
-          );
-        } else {
-          r.json().then((err) =>
-            setPower({ data: null, error: err.error, status: "rejected" })
-          );
-        }
-      });
+    fetch(`/powers/${id}`).then((r) => {
+      if (r.ok) {
+        r.json().then((power) =>
+          setPower({ data: power, error: null, status: "resolved" })
+        );
+      } else {
+        r.json().then((err) =>
+          setPower({ data: null, error: err.error, status: "rejected" })
+        );
+      }
+    });
   }, [id]);
 
   if (status === "pending") return <h1>Loading...</h1>;

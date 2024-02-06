@@ -1,6 +1,5 @@
-// HeroPowerForm.js
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 function HeroPowerForm() {
   const [heroes, setHeroes] = useState([]);
@@ -9,16 +8,16 @@ function HeroPowerForm() {
   const [powerId, setPowerId] = useState("");
   const [strength, setStrength] = useState("");
   const [formErrors, setFormErrors] = useState([]);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5555/heroes")
+    fetch("/heroes")
       .then((r) => r.json())
       .then(setHeroes);
   }, []);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5555/powers")
+    fetch("/powers")
       .then((r) => r.json())
       .then(setPowers);
   }, []);
@@ -30,8 +29,7 @@ function HeroPowerForm() {
       power_id: powerId,
       strength,
     };
-
-    fetch("http://127.0.0.1:5555/hero_powers", {
+    fetch("/hero_powers", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +37,7 @@ function HeroPowerForm() {
       body: JSON.stringify(formData),
     }).then((r) => {
       if (r.ok) {
-        navigate(`/heroes/${heroId}`);
+        history.push(`/heroes/${heroId}`);
       } else {
         r.json().then((err) => setFormErrors(err.errors));
       }
@@ -62,7 +60,6 @@ function HeroPowerForm() {
           </option>
         ))}
       </select>
-
       <label htmlFor="hero_id">Hero:</label>
       <select
         id="hero_id"
@@ -77,7 +74,6 @@ function HeroPowerForm() {
           </option>
         ))}
       </select>
-
       <label htmlFor="strength">Strength:</label>
       <input
         type="text"
@@ -86,7 +82,6 @@ function HeroPowerForm() {
         value={strength}
         onChange={(e) => setStrength(e.target.value)}
       />
-
       {formErrors.length > 0
         ? formErrors.map((err) => (
             <p key={err} style={{ color: "red" }}>
@@ -94,7 +89,6 @@ function HeroPowerForm() {
             </p>
           ))
         : null}
-
       <button type="submit">Add Hero Power</button>
     </form>
   );

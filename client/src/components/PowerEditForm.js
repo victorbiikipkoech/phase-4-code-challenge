@@ -1,6 +1,5 @@
-// PowerEditForm.js
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useHistory } from "react-router";
 
 function PowerEditForm() {
   const [{ data: power, errors, status }, setPower] = useState({
@@ -9,30 +8,29 @@ function PowerEditForm() {
     status: "pending",
   });
   const [description, setDescription] = useState("");
+  const history = useHistory();
   const { id } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5555/powers/${id}`)
-      .then((r) => {
-        if (r.ok) {
-          r.json().then((power) => {
-            setPower({ data: power, errors: [], status: "resolved" });
-            setDescription(power.description);
-          });
-        } else {
-          r.json().then((err) =>
-            setPower({ data: null, errors: [err.error], status: "rejected" })
-          );
-        }
-      });
+    fetch(`/powers/${id}`).then((r) => {
+      if (r.ok) {
+        r.json().then((power) => {
+          setPower({ data: power, errors: [], status: "resolved" });
+          setDescription(power.description);
+        });
+      } else {
+        r.json().then((err) =>
+          setPower({ data: null, errors: [err.error], status: "rejected" })
+        );
+      }
+    });
   }, [id]);
 
   if (status === "pending") return <h1>Loading...</h1>;
 
   function handleSubmit(e) {
     e.preventDefault();
-    fetch(`http://127.0.0.1:5555/powers/${power.id}`, {
+    fetch(`/powers/${power.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +40,7 @@ function PowerEditForm() {
       }),
     }).then((r) => {
       if (r.ok) {
-        navigate(`/powers/${power.id}`);
+        history.push(`/powers/${power.id}`);
       } else {
         r.json().then((err) =>
           setPower({ data: power, errors: err.errors, status: "rejected" })
@@ -62,7 +60,6 @@ function PowerEditForm() {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-
       {errors.length > 0
         ? errors.map((err) => (
             <p key={err} style={{ color: "red" }}>
@@ -70,7 +67,6 @@ function PowerEditForm() {
             </p>
           ))
         : null}
-
       <button type="submit">Update Power</button>
     </form>
   );

@@ -88,7 +88,7 @@ def get_hero_powers():
     } for hero_power in hero_powers]
 
     response = make_response(jsonify(hero_powers_list), 200)
-    return response
+    return response 
 
 # Sample API route to get a specific hero power by ID
 @app.route('/hero_powers/<int:hero_power_id>', methods=['GET'])
